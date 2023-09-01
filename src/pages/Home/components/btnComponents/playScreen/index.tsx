@@ -1,7 +1,8 @@
-import { Button, FormInstance, Modal } from 'antd'
+import {  FormInstance, Modal } from 'antd'
 import { useReactive } from 'ahooks'
 import ScreenContainer from './screenContainer'
 import { getMonitorScreen } from '@/services/home'
+import PunkEffectButton2 from '@/components/ButtonDy/PunkEffectButton2'
 
 export type ModalPropsType = {
   open: boolean
@@ -19,7 +20,7 @@ const PlayScreen: React.FC<{
 
   return (
     <>
-      <Button
+      <PunkEffectButton2
         key="playScreen"
         type="primary"
         onClick={async () => {
@@ -33,7 +34,7 @@ const PlayScreen: React.FC<{
         }}
       >
         播放录屏
-      </Button>
+      </PunkEffectButton2>
       <Modal
         title="播放录屏"
         open={modalProps.open}

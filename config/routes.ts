@@ -23,16 +23,22 @@ export default [
     ],
   },
   {
+    path: '/home',
+    name: 'home',
+    icon: 'home',
+    component: './Home',
+  },
+  {
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
   },
   {
-    path: '/home',
-    name: 'home',
-    icon: 'home',
-    component: './Home',
+    path: '/projects',
+    name: 'projects',
+    icon: 'project',
+    component: './Projects',
   },
   {
     path: '/admin',
@@ -59,7 +65,7 @@ export default [
   },
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/home',
   },
   {
     path: '*',

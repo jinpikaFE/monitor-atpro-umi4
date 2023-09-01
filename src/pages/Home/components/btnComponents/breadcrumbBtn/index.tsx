@@ -1,5 +1,6 @@
+import LightBorderButton from '@/components/ButtonDy/LightBorderButton'
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { Button, Modal, Timeline } from 'antd'
+import { Modal, Timeline } from 'antd'
 
 const BreadcrumbBtn: React.FC<{ record: any }> = ({ record }) => {
   const onBehavior = () => {
@@ -36,9 +37,9 @@ const BreadcrumbBtn: React.FC<{ record: any }> = ({ record }) => {
     })
   }
   return (
-    <Button key="behavior" onClick={() => onBehavior()} type="primary">
+    <LightBorderButton key="behavior" onClick={() => onBehavior()} type="primary">
       查看用户行为
-    </Button>
+    </LightBorderButton>
   )
 }
 
