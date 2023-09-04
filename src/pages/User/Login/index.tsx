@@ -1,5 +1,4 @@
 import Footer from '@/components/Footer';
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
   AlipayCircleOutlined,
   LockOutlined,
@@ -347,13 +346,15 @@ const Login: React.FC = () => {
                   },
                 ]}
                 onGetCaptcha={async (phone) => {
-                  const result = await getFakeCaptcha({
-                    phone,
-                  });
-                  if (!result) {
-                    return;
-                  }
-                  message.success('获取验证码成功！验证码为：1234');
+                  console.log(phone);
+                  
+                  // const result = await getFakeCaptcha({
+                  //   phone,
+                  // });
+                  // if (!result) {
+                  //   return;
+                  // }
+                  // message.success('获取验证码成功！验证码为：1234');
                 }}
               />
             </>

@@ -84,8 +84,8 @@ const server = new Server({
       }
     },
     responseinterceptorCatch: (err) => {
-      const code = err.response.status;
       message.destroy();
+      const code = err?.response?.status;
       if (code === 401) {
         storage.clear();
         window.location.href = `${location.origin}`;
