@@ -6,19 +6,28 @@ import {
   ProForm,
   ProFormDigit,
   ProFormInstance,
+  ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTreeSelect,
+  ProFormDependency,
 } from '@ant-design/pro-components';
 import { Button, Modal, Popconfirm, message } from 'antd';
 import { useRef } from 'react';
-import { DepartmentEntity, createDept, delDept, editDept, getDept } from '@/services/system';
+import {
+  MenuEntity,
+  createMenu,
+  delMenu,
+  editMenu,
+  getApiList,
+  getMenuList,
+} from '@/services/system';
 
-const Department: React.FC = () => {
+const MenuManage: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const modalFormRef = useRef<ProFormInstance>();
 
-  const onSubmit = async (record?: DepartmentEntity) => {
+  const onSubmit = async (record?: MenuEntity) => {
     const val = await modalFormRef?.current?.validateFields();
     const relVal = {
       ...val,
@@ -26,9 +35,9 @@ const Department: React.FC = () => {
 
     if (record) {
       // 编辑
-      const res = await editDept({
+      const res = await editMenu({
         ...relVal,
-        deptId: record?.deptId,
+        menuId: record?.menuId,
       });
       if (res?.code === 200) {
         message.success('编辑成功');
@@ -38,7 +47,7 @@ const Department: React.FC = () => {
       return Promise.reject();
     }
     // 新建
-    const res = await createDept({ ...relVal });
+    const res = await createMenu({ ...relVal });
     if (res?.code === 200) {
       message.success('新建成功');
       actionRef?.current?.reload();
@@ -46,7 +55,7 @@ const Department: React.FC = () => {
     }
     return Promise.reject();
   };
-  const showModal = (record?: DepartmentEntity) => {
+  const showModal = (record?: MenuEntity) => {
     Modal.confirm({
       title: record ? '编辑' : '添加',
       onOk: async () => onSubmit(record),
@@ -64,38 +73,84 @@ const Department: React.FC = () => {
           }}
           formRef={modalFormRef}
         >
+          <ProFormRadio.Group
+            label="菜单类型"
+            name="menuType"
+            valueEnum={
+              new Map([
+                ['M', '路由'],
+                ['F', '组件'],
+              ])
+            }
+            rules={[{ required: true, message: '请选择' }]}
+          />
           <ProFormTreeSelect
-            label="上级部门"
+            label="上级菜单"
             name="parentId"
             request={async () => {
-              const res = await getDept();
+              const res = await getMenuList();
               return res?.data;
             }}
             fieldProps={{
               fieldNames: {
-                value: 'deptId',
-                label: 'deptName',
+                value: 'menuId',
+                label: 'title',
               },
             }}
           />
+
           <ProFormText
-            label="部门名称"
-            name="deptName"
+            label="菜单标题"
+            name="title"
             rules={[{ required: true, message: '请输入' }]}
           />
-          <ProFormText label="负责人" name="leader" rules={[{required:true}]} />
-          <ProFormText label="联系电话" name="phone" fieldProps={{ maxLength: 11 }} />
-          <ProFormText label="邮箱" name="email" />
           <ProFormDigit label="排序" name="sort" fieldProps={{ precision: 0 }} />
+          <ProFormDependency name={['menuType']}>
+            {({ menuType }) => {
+              if (menuType === 'M') {
+                return (
+                  <>
+                    <ProFormText label="路由地址" name="path" required />
+                    <ProFormSelect
+                      label="菜单状态"
+                      name="visible"
+                      valueEnum={
+                        new Map([
+                          ['1', '显示'],
+                          ['0', '隐藏'],
+                        ])
+                      }
+                    />
+                  </>
+                );
+              }
+              if (menuType === 'F') {
+                return (
+                  <>
+                    <ProFormText label="权限标识" name="permission" rules={[{ required: true }]} />
+                  </>
+                );
+              }
+              return null;
+            }}
+          </ProFormDependency>
           <ProFormSelect
-            label="部门状态"
-            name="status"
-            valueEnum={
-              new Map([
-                [2, '正常'],
-                [1, '停用'],
-              ])
-            }
+            label="API权限"
+            name="apis"
+            mode="multiple"
+            request={async () => {
+              const res = await getApiList({
+                pageIndex: 1,
+                pageSize: 10000,
+              });
+              return res?.data?.list;
+            }}
+            fieldProps={{
+              fieldNames: {
+                value: 'id',
+                label: 'title',
+              },
+            }}
           />
         </ProForm>
       ),
@@ -106,39 +161,25 @@ const Department: React.FC = () => {
       <ExcelTable
         columns={[
           {
-            title: '部门名称',
-            dataIndex: 'deptName',
+            title: '菜单名称',
+            dataIndex: 'title',
             hideInTable: true,
-          },
-          {
-            title: '部门状态',
-            dataIndex: 'status',
-            hideInTable: true,
-            valueType: 'select',
-            valueEnum: new Map([
-              [2, '正常'],
-              [1, '停用'],
-            ]),
           },
           /** search */
           {
-            title: '部门名称',
-            dataIndex: 'deptName',
+            title: '菜单名称',
+            dataIndex: 'title',
+            hideInSearch: true,
+          },
+          {
+            title: '路由地址',
+            dataIndex: 'path',
             hideInSearch: true,
           },
           {
             title: '排序',
             dataIndex: 'sort',
             hideInSearch: true,
-          },
-          {
-            title: '状态',
-            dataIndex: 'status',
-            hideInSearch: true,
-            valueEnum: new Map([
-              [2, '正常'],
-              [1, '停用'],
-            ]),
           },
           {
             title: '创建时间',
@@ -150,7 +191,7 @@ const Department: React.FC = () => {
             title: '操作',
             key: 'option',
             valueType: 'option',
-            render: (_, record: DepartmentEntity) => [
+            render: (_, record: MenuEntity) => [
               <Button key="edit" type="link" onClick={() => showModal(record)}>
                 编辑
               </Button>,
@@ -159,7 +200,7 @@ const Department: React.FC = () => {
                 placement="topRight"
                 title="确定要删除吗?"
                 onConfirm={async () => {
-                  const res = await delDept({ ids: record?.deptId ? [record?.deptId] : undefined });
+                  const res = await delMenu({ ids: record?.menuId ? [record?.menuId] : undefined });
                   if (res?.code === 200) {
                     message.success('删除成功');
                     actionRef?.current?.reloadAndRest?.();
@@ -179,11 +220,11 @@ const Department: React.FC = () => {
           },
         ]}
         requestFn={async (params) => {
-          const data = await getDept(params);
+          const data = await getMenuList(params);
           return data;
         }}
         pagination={false}
-        rowKey="deptId"
+        rowKey="menuId"
         actionRef={actionRef}
         rowSelection={false}
         toolBarRenderFn={() => [
@@ -196,4 +237,4 @@ const Department: React.FC = () => {
   );
 };
 
-export default Department;
+export default MenuManage;

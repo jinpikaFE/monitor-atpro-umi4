@@ -141,3 +141,120 @@ export async function editApi(data?: ApiEntity) {
     data,
   });
 }
+
+export type MenuParams = {
+  code?: number;
+  msg?: string;
+  /**
+   * 数据集
+   */
+  requestId?: string;
+  status?: string;
+};
+
+export type MenuEntity = {
+  /**
+   * 请求方式
+   */
+  action?: string;
+  apis?: number[];
+  /**
+   * 是否面包屑
+   */
+  breadcrumb?: string;
+  /**
+   * 组件
+   */
+  component?: string;
+  createBy?: number;
+  /**
+   * 图标
+   */
+  icon?: string;
+  /**
+   * 是否frame
+   */
+  isFrame?: string;
+  /**
+   * 编码
+   */
+  menuId?: number;
+  /**
+   * 菜单name
+   */
+  menuName?: string;
+  /**
+   * 菜单类型
+   */
+  menuType?: string;
+  /**
+   * 是否缓存
+   */
+  noCache?: boolean;
+  /**
+   * 上级菜单
+   */
+  parentId?: number;
+  /**
+   * 路径
+   */
+  path?: string;
+  /**
+   * id路径
+   */
+  paths?: string;
+  /**
+   * 权限编码
+   */
+  permission?: string;
+  /**
+   * 排序
+   */
+  sort?: number;
+  sysApi?: ApiEntity[];
+  /**
+   * 显示名称
+   */
+  title?: string;
+  updateBy?: number;
+  /**
+   * 是否显示
+   */
+  visible?: string;
+};
+
+/** Menu列表数据 */
+export async function getMenuList(params?: MenuParams) {
+  return server.request({
+    url: '/api/v1/menu',
+    method: 'get',
+    params,
+  });
+}
+
+/** 创建菜单 */
+export async function createMenu(data?: MenuEntity) {
+  return server.request({
+    url: '/api/v1/menu',
+    method: 'post',
+    data,
+  });
+}
+
+/** 修改菜单 */
+export async function editMenu(data?: MenuEntity) {
+  return server.request({
+    url: `/api/v1/menu/${data?.menuId}`,
+    method: 'put',
+    data,
+  });
+}
+
+/** 删除菜单 */
+export async function delMenu(data: { ids?: number[] }) {
+  return server.request({
+    url: `/api/v1/menu`,
+    method: 'delete',
+    data,
+  });
+}

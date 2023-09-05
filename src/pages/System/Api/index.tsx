@@ -11,7 +11,7 @@ import { Button, Modal, message } from 'antd';
 import { useRef } from 'react';
 import { ApiEntity, editApi, getApiList } from '@/services/system';
 
-const Department: React.FC = () => {
+const Api: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const modalFormRef = useRef<ProFormInstance>();
 
@@ -147,4 +147,4 @@ const Department: React.FC = () => {
   );
 };
 
-export default Department;
+export default Api;

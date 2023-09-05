@@ -17,5 +17,10 @@ export default {
       path: '/sys/api',
       component: './System/Api',
     },
+    {
+      name: 'menuManage',
+      path: '/sys/menuManage',
+      component: './System/MenuManage',
+    },
   ],
 };
