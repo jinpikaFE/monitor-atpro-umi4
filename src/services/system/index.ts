@@ -258,3 +258,101 @@ export async function delMenu(data: { ids?: number[] }) {
     data,
   });
 }
+
+export type RoleParams = {
+  /**
+   * 页码
+   */
+  pageIndex?: number;
+  /**
+   * 页条数
+   */
+  pageSize?: number;
+  /**
+   * roleKey
+   */
+  roleKey?: string;
+  /**
+   * roleName
+   */
+  roleName?: string;
+  /**
+   * status
+   */
+  status?: string;
+};
+
+export type RoleEntity = {
+  admin?: boolean;
+  createBy?: number;
+  dataScope?: string;
+  deptIds?: number[];
+  /**
+   * 标记
+   */
+  flag?: string;
+  menuIds?: number[];
+  /**
+   * 备注
+   */
+  remark?: string;
+  /**
+   * 角色编码
+   */
+  roleId?: number;
+  /**
+   * 角色代码
+   */
+  roleKey?: string;
+  /**
+   * 角色名称
+   */
+  roleName?: string;
+  /**
+   * 角色排序
+   */
+  roleSort?: number;
+  /**
+   * 状态 1禁用 2正常
+   */
+  status?: string;
+  sysDept?: DepartmentEntity[];
+  sysMenu?: MenuEntity[];
+  updateBy?: number;
+};
+
+/** Role 列表数据 */
+export async function getRoleList(params?: RoleParams) {
+  return server.request({
+    url: '/api/v1/role',
+    method: 'get',
+    params,
+  });
+}
+
+/** 创建角色 */
+export async function createRole(data?: RoleEntity) {
+  return server.request({
+    url: '/api/v1/role',
+    method: 'post',
+    data,
+  });
+}
+
+/** 修改角色 */
+export async function editRole(data?: RoleEntity) {
+  return server.request({
+    url: `/api/v1/role/${data?.roleId}`,
+    method: 'put',
+    data,
+  });
+}
+
+/** 删除角色 */
+export async function delRole(data: { ids?: number[] }) {
+  return server.request({
+    url: `/api/v1/role`,
+    method: 'delete',
+    data,
+  });
+}

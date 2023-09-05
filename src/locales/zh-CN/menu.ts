@@ -54,4 +54,5 @@ export default {
   'menu.sys.department': '部门管理',
   'menu.sys.api': '接口管理',
   'menu.sys.menuManage': '菜单管理',
+  'menu.sys.role':'角色管理'
 };

@@ -22,5 +22,10 @@ export default {
       path: '/sys/menuManage',
       component: './System/MenuManage',
     },
+    {
+      name: 'role',
+      path: '/sys/role',
+      component: './System/Role',
+    },
   ],
 };

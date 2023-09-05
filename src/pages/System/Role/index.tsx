@@ -1,4 +1,3 @@
-import PunkEffectButton2 from '@/components/ButtonDy/PunkEffectButton2';
 import ExcelTable from '@/components/excelTable';
 import {
   ActionType,
@@ -6,28 +5,28 @@ import {
   ProForm,
   ProFormDigit,
   ProFormInstance,
-  ProFormRadio,
   ProFormSelect,
   ProFormText,
+  ProFormTextArea,
   ProFormTreeSelect,
-  ProFormDependency,
 } from '@ant-design/pro-components';
 import { Button, Modal, Popconfirm, message } from 'antd';
 import { useRef } from 'react';
 import {
-  MenuEntity,
-  createMenu,
-  delMenu,
-  editMenu,
-  getApiList,
+  RoleEntity,
+  createRole,
+  delRole,
+  editRole,
   getMenuList,
+  getRoleList,
 } from '@/services/system';
+import PunkEffectButton2 from '@/components/ButtonDy/PunkEffectButton2';
 
-const MenuManage: React.FC = () => {
+const Role: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const modalFormRef = useRef<ProFormInstance>();
 
-  const onSubmit = async (record?: MenuEntity) => {
+  const onSubmit = async (record?: RoleEntity) => {
     const val = await modalFormRef?.current?.validateFields();
     const relVal = {
       ...val,
@@ -35,9 +34,9 @@ const MenuManage: React.FC = () => {
 
     if (record) {
       // 编辑
-      const res = await editMenu({
+      const res = await editRole({
         ...relVal,
-        menuId: record?.menuId,
+        roleId: record?.roleId,
       });
       if (res?.code === 200) {
         message.success('编辑成功');
@@ -47,7 +46,9 @@ const MenuManage: React.FC = () => {
       return Promise.reject();
     }
     // 新建
-    const res = await createMenu({ ...relVal });
+    const res = await createRole({
+      ...relVal,
+    });
     if (res?.code === 200) {
       message.success('新建成功');
       actionRef?.current?.reload();
@@ -55,7 +56,7 @@ const MenuManage: React.FC = () => {
     }
     return Promise.reject();
   };
-  const showModal = (record?: MenuEntity) => {
+  const showModal = (record?: RoleEntity) => {
     Modal.confirm({
       title: record ? '编辑' : '添加',
       onOk: async () => onSubmit(record),
@@ -70,89 +71,40 @@ const MenuManage: React.FC = () => {
           layout="horizontal"
           initialValues={{
             ...record,
-            apis: record?.sysApi ? record?.sysApi?.map((item) => item?.id) : undefined,
+            menuIds: record?.sysMenu ? record?.sysMenu?.map((item) => item?.menuId) : undefined,
           }}
           formRef={modalFormRef}
         >
-          <ProFormRadio.Group
-            label="菜单类型"
-            name="menuType"
+          <ProFormText label="角色名称" name="roleName" rules={[{ required: true }]} />
+          <ProFormText label="权限字符" name="roleKey" rules={[{ required: true }]} />
+          <ProFormDigit label="角色排序" name="roleSort" fieldProps={{ precision: 0 }} />
+          <ProFormSelect
+            label="状态"
+            name="status"
             valueEnum={
               new Map([
-                ['M', '路由'],
-                ['F', '组件'],
+                ['2', '正常'],
+                ['1', '停用'],
               ])
             }
-            rules={[{ required: true, message: '请选择' }]}
           />
           <ProFormTreeSelect
-            label="上级菜单"
-            name="parentId"
+            label="权限设置"
+            name="menuIds"
             request={async () => {
               const res = await getMenuList();
               return res?.data;
             }}
             fieldProps={{
+              treeCheckable: true,
               fieldNames: {
                 value: 'menuId',
                 label: 'title',
               },
             }}
+            allowClear
           />
-
-          <ProFormText
-            label="菜单标题"
-            name="title"
-            rules={[{ required: true, message: '请输入' }]}
-          />
-          <ProFormDigit label="排序" name="sort" fieldProps={{ precision: 0 }} />
-          <ProFormDependency name={['menuType']}>
-            {({ menuType }) => {
-              if (menuType === 'M') {
-                return (
-                  <>
-                    <ProFormText label="路由地址" name="path" required />
-                    <ProFormSelect
-                      label="菜单状态"
-                      name="visible"
-                      valueEnum={
-                        new Map([
-                          ['1', '显示'],
-                          ['0', '隐藏'],
-                        ])
-                      }
-                    />
-                  </>
-                );
-              }
-              if (menuType === 'F') {
-                return (
-                  <>
-                    <ProFormText label="权限标识" name="permission" rules={[{ required: true }]} />
-                  </>
-                );
-              }
-              return null;
-            }}
-          </ProFormDependency>
-          <ProFormSelect
-            label="API权限"
-            name="apis"
-            mode="multiple"
-            request={async () => {
-              const res = await getApiList({
-                pageIndex: 1,
-                pageSize: 10000,
-              });
-              return res?.data?.list;
-            }}
-            fieldProps={{
-              fieldNames: {
-                value: 'id',
-                label: 'title',
-              },
-            }}
-          />
+          <ProFormTextArea label="备注" name="remark" />
         </ProForm>
       ),
     });
@@ -162,25 +114,48 @@ const MenuManage: React.FC = () => {
       <ExcelTable
         columns={[
           {
-            title: '菜单名称',
-            dataIndex: 'title',
+            title: '角色名称',
+            dataIndex: 'roleName',
             hideInTable: true,
+          },
+          {
+            title: '状态',
+            dataIndex: 'status',
+            hideInTable: true,
+            valueEnum: new Map([
+              [2, '正常'],
+              [1, '停用'],
+            ]),
           },
           /** search */
           {
-            title: '菜单名称',
-            dataIndex: 'title',
+            title: '序号',
+            dataIndex: 'roleId',
             hideInSearch: true,
           },
           {
-            title: '路由地址',
-            dataIndex: 'path',
+            title: '角色名称',
+            dataIndex: 'roleName',
+            hideInSearch: true,
+          },
+          {
+            title: '权限字符',
+            dataIndex: 'roleKey',
             hideInSearch: true,
           },
           {
             title: '排序',
-            dataIndex: 'sort',
+            dataIndex: 'roleSort',
             hideInSearch: true,
+          },
+          {
+            title: '状态',
+            dataIndex: 'status',
+            hideInSearch: true,
+            valueEnum: new Map([
+              ['2', '正常'],
+              ['1', '停用'],
+            ]),
           },
           {
             title: '创建时间',
@@ -192,7 +167,7 @@ const MenuManage: React.FC = () => {
             title: '操作',
             key: 'option',
             valueType: 'option',
-            render: (_, record: MenuEntity) => [
+            render: (_, record: RoleEntity) => [
               <Button key="edit" type="link" onClick={() => showModal(record)}>
                 编辑
               </Button>,
@@ -201,7 +176,7 @@ const MenuManage: React.FC = () => {
                 placement="topRight"
                 title="确定要删除吗?"
                 onConfirm={async () => {
-                  const res = await delMenu({ ids: record?.menuId ? [record?.menuId] : undefined });
+                  const res = await delRole({ ids: record?.roleId ? [record?.roleId] : undefined });
                   if (res?.code === 200) {
                     message.success('删除成功');
                     actionRef?.current?.reloadAndRest?.();
@@ -221,11 +196,10 @@ const MenuManage: React.FC = () => {
           },
         ]}
         requestFn={async (params) => {
-          const data = await getMenuList(params);
+          const data = await getRoleList(params);
           return data;
         }}
-        pagination={false}
-        rowKey="menuId"
+        rowKey="roleId"
         actionRef={actionRef}
         rowSelection={false}
         toolBarRenderFn={() => [
@@ -238,4 +212,4 @@ const MenuManage: React.FC = () => {
   );
 };
 
-export default MenuManage;
+export default Role;
