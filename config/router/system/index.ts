@@ -12,5 +12,10 @@ export default {
       path: '/sys/department',
       component: './System/Department',
     },
+    {
+      name: 'api',
+      path: '/sys/api',
+      component: './System/Api',
+    },
   ],
 };

@@ -52,4 +52,5 @@ export default {
   'menu.projects':'项目管理',
   'menu.sys':'系统管理',
   'menu.sys.department':'部门管理',
+  'menu.sys.api':'接口管理',
 };

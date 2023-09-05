@@ -179,10 +179,11 @@ const Department: React.FC = () => {
             ],
           },
         ]}
-        requestFn={async () => {
-          const data = await getDept();
+        requestFn={async (params) => {
+          const data = await getDept(params);
           return data;
         }}
+        pagination={false}
         rowKey="deptId"
         actionRef={actionRef}
         rowSelection={false}
@@ -191,7 +192,6 @@ const Department: React.FC = () => {
             添加
           </PunkEffectButton2>,
         ]}
-        search={false}
       />
     </PageContainer>
   );

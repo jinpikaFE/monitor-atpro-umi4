@@ -82,3 +82,62 @@ export async function delDept(data: { ids?: number[] }) {
     data,
   });
 }
+
+export type ApiParams = {
+  /**
+   * 类型
+   */
+  action?: string;
+  /**
+   * 名称
+   */
+  name?: string;
+  /**
+   * 页码
+   */
+  pageIndex?: number;
+  /**
+   * 页条数
+   */
+  pageSize?: number;
+  /**
+   * 地址
+   */
+  path?: string;
+  /**
+   * 标题
+   */
+  title?: string;
+};
+
+export type ApiEntity = {
+  action?: string;
+  createBy?: number;
+  handle?: string;
+  /**
+   * 编码
+   */
+  id?: number;
+  path?: string;
+  title?: string;
+  type?: string;
+  updateBy?: number;
+};
+
+/** 获取接口管理列表 */
+export async function getApiList(params?: ApiParams) {
+  return server.request({
+    url: '/api/v1/sys-api',
+    method: 'get',
+    params,
+  });
+}
+
+/** 修改接口 */
+export async function editApi(data?: ApiEntity) {
+  return server.request({
+    url: `/api/v1/sys-api/${data?.id}`,
+    method: 'put',
+    data,
+  });
+}

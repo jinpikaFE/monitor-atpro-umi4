@@ -1,32 +1,32 @@
-import { exportExecl } from '@/utils'
-import { ProColumns, ProFormInstance, ProTable, ProTableProps } from '@ant-design/pro-components'
-import { Button } from 'antd'
-import { forwardRef, useRef, useState, useEffect, useImperativeHandle } from 'react'
-import type { FC } from 'react'
+import { exportExecl } from '@/utils';
+import { ProColumns, ProFormInstance, ProTable, ProTableProps } from '@ant-design/pro-components';
+import { Button } from 'antd';
+import { forwardRef, useRef, useState, useEffect, useImperativeHandle } from 'react';
+import type { FC } from 'react';
 
 type IExcelTable = {
-  columns: ProColumns<any, 'text'>[]
+  columns: ProColumns<any, 'text'>[];
   /** 接口请求 */
-  requestFn: (params: any, sort?: any) => any
+  requestFn: (params: any, sort?: any) => any;
   /** 导出接口 */
-  exportExeclReq?: (params: any) => any
+  exportExeclReq?: (params: any) => any;
   /** toolBarRender */
-  toolBarRenderFn?: (params: any) => any
-  ref?: any
+  toolBarRenderFn?: (params: any) => any;
+  ref?: any;
   /** 设置选择的row */
-  setSelectedRows?: React.Dispatch<React.SetStateAction<any[]>>
+  setSelectedRows?: React.Dispatch<React.SetStateAction<any[]>>;
   /** 自定义导出 */
-  customExport?: (params: any) => any
+  customExport?: (params: any) => any;
   /** 额外的勾选属性 */
-  extraRowSelection?: Record<string, any>
+  extraRowSelection?: Record<string, any>;
   /** 初始值key选择 */
-  initRowKey?: any[]
+  initRowKey?: any[];
   /** 自定义state key */
-  customKeys?: any[]
-  setCustomKeys?: React.Dispatch<React.SetStateAction<any[]>>
+  customKeys?: any[];
+  setCustomKeys?: React.Dispatch<React.SetStateAction<any[]>>;
   /** 忽略重置字段 */
-  ignoreFieldNames?: string[]
-} & ProTableProps<any, any>
+  ignoreFieldNames?: string[];
+} & ProTableProps<any, any>;
 
 const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
   const {
@@ -42,47 +42,47 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
     setCustomKeys,
     ignoreFieldNames,
     ...otherProps
-  } = props
-  const [selectedRowKeys, setSelectedRowKeys] = useState<any>(initRowKey || [])
-  const formRefin = useRef<ProFormInstance>(null)
-  const formRef = formRefMy || formRefin
+  } = props;
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any>(initRowKey || []);
+  const formRefin = useRef<ProFormInstance>(null);
+  const formRef = formRefMy || formRefin;
 
   const onSelectChange = (rowKeys: any[], selectedRows: any[]) => {
-    console.log('selectedRowKeys changed: ', rowKeys, selectedRows)
-    setSelectedRowKeys(rowKeys)
+    console.log('selectedRowKeys changed: ', rowKeys, selectedRows);
+    setSelectedRowKeys(rowKeys);
     if (setCustomKeys) {
-      setCustomKeys(rowKeys)
+      setCustomKeys(rowKeys);
     }
 
     if (setSelectedRows) {
-      setSelectedRows(selectedRows)
+      setSelectedRows(selectedRows);
     }
-  }
+  };
 
   /** 自定义state key 赋予初始值 */
   useEffect(() => {
     if (initRowKey && setCustomKeys) {
-      setCustomKeys(initRowKey)
+      setCustomKeys(initRowKey);
     }
     if (initRowKey && setSelectedRows) {
       setSelectedRows(
-        initRowKey?.map(item => ({
-          id: item
-        }))
-      )
+        initRowKey?.map((item) => ({
+          id: item,
+        })),
+      );
     }
-  }, [initRowKey])
+  }, [initRowKey]);
 
   const onExport = async () => {
-    console.log(formRef?.current?.getFieldsValue())
+    console.log(formRef?.current?.getFieldsValue());
     if (customExport) {
       customExport({
         record: formRef?.current?.getFieldsValue(),
         id__in:
           (customKeys || selectedRowKeys)?.length > 0
             ? (customKeys || selectedRowKeys)?.join?.(',')
-            : undefined
-      })
+            : undefined,
+      });
     } else {
       const data = await exportExeclReq?.({
         formData: formRef?.current?.getFieldsValue(),
@@ -90,15 +90,15 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
         id__in:
           (customKeys || selectedRowKeys)?.length > 0
             ? (customKeys || selectedRowKeys)?.join?.(',')
-            : undefined
-      })
-      exportExecl(data)
+            : undefined,
+      });
+      exportExecl(data);
     }
-  }
+  };
 
   useImperativeHandle(formRefMy, () => ({
-    onExport: () => onExport()
-  }))
+    onExport: () => onExport(),
+  }));
 
   return (
     <>
@@ -106,22 +106,25 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
         columns={columns}
         formRef={formRef as any}
         request={async (params = {}, sort) => {
-          const { current: pageNum, pageSize, ...otherParams } = params
-          const res = await requestFn({ pageNum, pageSize, ...otherParams }, sort)
+          const { current: pageNum, pageSize, ...otherParams } = params;
+          const res = await requestFn(
+            { pageNum, pageIndex: pageNum, pageSize, ...otherParams },
+            sort,
+          );
 
           console.log(res);
-          
+
           if (res?.code === 200) {
             return {
-              total: res?.data?.total,
+              total: res?.data?.total || res?.data?.count,
               data: res?.data?.list || res?.data,
               success: true,
-              page: res?.data?.pageNum
-            }
+              page: res?.data?.pageNum || res?.data?.pageIndex,
+            };
           }
           return {
-            success: false
-          }
+            success: false,
+          };
         }}
         rowKey="id"
         rowSelection={{
@@ -131,7 +134,7 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
           preserveSelectedRowKeys: true,
           selectedRowKeys: customKeys || selectedRowKeys,
           onChange: onSelectChange,
-          ...extraRowSelection
+          ...extraRowSelection,
         }}
         search={{
           labelWidth: 'auto',
@@ -141,32 +144,32 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
               key="reset"
               onClick={() => {
                 const keyArr = (searchConfig as any)?.items?.map(
-                  (item: { props: { name: any } }) => [item?.props?.name, undefined]
-                )
+                  (item: { props: { name: any } }) => [item?.props?.name, undefined],
+                );
                 formProps?.form?.setFieldsValue(
                   Object.fromEntries(
                     new Map(
                       keyArr?.filter?.(
-                        (e: [string, undefined]) => !ignoreFieldNames?.includes(e?.[0])
-                      )
-                    ).entries()
-                  )
-                )
-                formProps?.form?.submit()
+                        (e: [string, undefined]) => !ignoreFieldNames?.includes(e?.[0]),
+                      ),
+                    ).entries(),
+                  ),
+                );
+                formProps?.form?.submit();
               }}
             >
               重置
-            </Button>
-          ]
+            </Button>,
+          ],
         }}
         bordered
         form={{
           // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
-          syncToUrl: false
+          syncToUrl: false,
         }}
         pagination={{
           showSizeChanger: true,
-          showQuickJumper: true
+          showQuickJumper: true,
         }}
         dateFormatter="string"
         toolBarRender={
@@ -177,14 +180,14 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
                     导出数据
                   </Button>
                 ),
-                ...(toolBarRenderFn?.({ rowKeys: customKeys || selectedRowKeys }) || [])
+                ...(toolBarRenderFn?.({ rowKeys: customKeys || selectedRowKeys }) || []),
               ]
             : false
         }
         {...otherProps}
       />
     </>
-  )
-})
+  );
+});
 
-export default ExcelTable
+export default ExcelTable;
