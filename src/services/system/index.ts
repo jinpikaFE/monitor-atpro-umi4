@@ -45,6 +45,7 @@ export type DepartmentEntity = {
    */
   status?: number;
   updateBy?: number;
+  children?: DepartmentEntity[];
 };
 
 /** 分页部门列表数据 */
@@ -352,6 +353,71 @@ export async function editRole(data?: RoleEntity) {
 export async function delRole(data: { ids?: number[] }) {
   return server.request({
     url: `/api/v1/role`,
+    method: 'delete',
+    data,
+  });
+}
+
+export type UserParams = {
+  /**
+   * username
+   */
+  username?: string;
+  deptId?: string;
+};
+
+export type UserEntity = {
+  avatar?: string;
+  createBy?: number;
+  deptId?: number;
+  email?: string;
+  nickName?: string;
+  password?: string;
+  phone?: string;
+  postId?: number;
+  remark?: string;
+  roleId?: number;
+  sex?: string;
+  status?: string;
+  updateBy?: number;
+  /**
+   * 用户ID
+   */
+  userId?: number;
+  username?: string;
+};
+
+/** user 列表数据 */
+export async function getUserList(params?: UserParams) {
+  return server.request({
+    url: '/api/v1/sys-user',
+    method: 'get',
+    params,
+  });
+}
+
+/** 创建用户 */
+export async function createUser(data?: UserEntity) {
+  return server.request({
+    url: '/api/v1/sys-user',
+    method: 'post',
+    data,
+  });
+}
+
+/** 修改用户 */
+export async function editUser(data?: UserEntity) {
+  return server.request({
+    url: `/api/v1/sys-user`,
+    method: 'put',
+    data,
+  });
+}
+
+/** 删除用户 */
+export async function delUser(data: { ids?: number[] }) {
+  return server.request({
+    url: `/api/v1/sys-user`,
     method: 'delete',
     data,
   });

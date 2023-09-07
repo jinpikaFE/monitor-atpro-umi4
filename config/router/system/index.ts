@@ -27,5 +27,10 @@ export default {
       path: '/sys/role',
       component: './System/Role',
     },
+    {
+      name: 'user',
+      path: '/sys/user',
+      component: './System/User',
+    },
   ],
 };
