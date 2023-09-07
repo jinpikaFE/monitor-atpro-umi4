@@ -161,9 +161,9 @@ const User: React.FC = () => {
             }
           />
           <ProFormSelect
-            mode="multiple"
+            // mode="multiple"
             label="角色"
-            name="roleIds"
+            name="roleId"
             request={async () => {
               const res = await getRoleList({
                 pageIndex: 1,

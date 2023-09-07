@@ -1,6 +1,7 @@
 import { exportExecl } from '@/utils';
 import { ProColumns, ProFormInstance, ProTable, ProTableProps } from '@ant-design/pro-components';
 import { Button } from 'antd';
+import { isArray } from 'lodash';
 import { forwardRef, useRef, useState, useEffect, useImperativeHandle } from 'react';
 import type { FC } from 'react';
 
@@ -117,7 +118,7 @@ const ExcelTable: FC<IExcelTable> = forwardRef((props, formRefMy: any) => {
           if (res?.code === 200) {
             return {
               total: res?.data?.total || res?.data?.count,
-              data: res?.data?.list || res?.data,
+              data: isArray(res?.data) ? res?.data : res?.data?.list,
               success: true,
               page: res?.data?.pageNum || res?.data?.pageIndex,
             };
