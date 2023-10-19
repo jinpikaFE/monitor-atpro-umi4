@@ -8,7 +8,7 @@ import { history, Link } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import React from 'react';
 import { AvatarDropdown, AvatarName } from './components/RightContent/AvatarDropdown';
-import { getUserInfo } from './services/user';
+import { getMenuInfo, getUserInfo } from './services/user';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
@@ -24,6 +24,9 @@ export async function getInitialState(): Promise<{
   const fetchUserInfo = async () => {
     try {
       const msg = await getUserInfo();
+      const menuInfo = await getMenuInfo();
+      console.log(menuInfo);
+
       return msg.data;
     } catch (error) {
       history.push(loginPath);

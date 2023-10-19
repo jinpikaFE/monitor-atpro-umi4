@@ -25,6 +25,14 @@ export async function getUserInfo() {
   });
 }
 
+/** 根据登录角色名称获取菜单列表数据（左菜单使用） */
+export async function getMenuInfo() {
+  return server.request({
+    url: '/api/v1/menurole',
+    method: 'get',
+  });
+}
+
 /** 退出登录 */
 export async function logout() {
   return server.request({
